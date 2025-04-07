@@ -25,9 +25,9 @@ const MoviesPage = () => {
     try {
       setLoading(true);
       setError(null);
-  
+
       let url = `https://movies-app-backend-0r3l.onrender.com/movies/all?page=${page}&size=21`;
-  
+
       if (filter === "imdb") {
         url = `https://movies-app-backend-0r3l.onrender.com/movies/byImdbRating?page=${page}&size=21`;
       } else if (filter === "release") {
@@ -35,40 +35,39 @@ const MoviesPage = () => {
       } else if (filter === "today release") {
         const today = new Date().toISOString().split("T")[0];
         url = `https://movies-app-backend-0r3l.onrender.com/movies/moviesByDate?date=${today}`;
-  
+
         console.log("Fetching today's releases:", url);
         let response = await fetch(url);
         let text = await response.text();
-  
-        
+
         if (!text || text.trim() === "[]") {
           const yesterdayDate = new Date();
           yesterdayDate.setDate(yesterdayDate.getDate() - 1);
           const yesterday = yesterdayDate.toISOString().split("T")[0];
-  
+
           url = `https://movies-app-backend-0r3l.onrender.com/movies/moviesByDate?date=${yesterday}`;
           console.log("No today's releases. Fetching yesterday's:", url);
           response = await fetch(url);
           text = await response.text();
         }
-  
+
         if (!text || text.trim() === "[]") {
           setMovies([]);
           return;
         }
-  
+
         const data = JSON.parse(text);
         setMovies(Array.isArray(data) ? data : data.content || []);
         return;
       }
-  
+
       const response = await fetch(url);
       const text = await response.text();
       if (!text) {
         setMovies([]);
         return;
       }
-  
+
       const data = JSON.parse(text);
       setMovies(Array.isArray(data) ? data : data.content || []);
     } catch (error) {
@@ -78,9 +77,8 @@ const MoviesPage = () => {
       setLoading(false);
     }
   };
-  
-  
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchMovies();
   }, [page, filter]);
@@ -205,7 +203,7 @@ const MoviesPage = () => {
 
             <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
               <p className="text-gray-800 text-lg leading-relaxed italic text-center">
-                "{selectedMovie.overview}"
+                &quot;{selectedMovie.overview}&quot;
               </p>
             </div>
 
