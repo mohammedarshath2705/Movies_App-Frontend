@@ -106,7 +106,7 @@ const MoviesPage = () => {
           <option value="default">Sort By</option>
           <option value="imdb">IMDb Rating</option>
           <option value="release">Release Date</option>
-          <option value="today release">Today's Release</option>
+          <option value="today release">Today Release</option>
         </select>
       </div>
 
