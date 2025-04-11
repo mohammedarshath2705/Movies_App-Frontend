@@ -1,4 +1,3 @@
-// hooks/useMovies.ts
 "use client";
 
 import { useState, useEffect } from "react";
@@ -16,7 +15,6 @@ export function useMovies() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [filter, setFilter] = useState<FilterType>(initialFilter);
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
     async function loadMovies() {
@@ -39,14 +37,6 @@ export function useMovies() {
     loadMovies();
   }, [page, filter]);
 
-  const openMovieDetails = (movie: Movie) => {
-    setSelectedMovie(movie);
-  };
-
-  const closeMovieDetails = () => {
-    setSelectedMovie(null);
-  };
-
   const changeFilter = (newFilter: FilterType) => {
     setPage(0);
     setMovies([]);
@@ -65,8 +55,5 @@ export function useMovies() {
     setPage,
     filter,
     changeFilter,
-    selectedMovie,
-    openMovieDetails,
-    closeMovieDetails,
   };
 }
