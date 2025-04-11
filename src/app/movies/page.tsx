@@ -10,7 +10,7 @@ export default function MoviesPage() {
     movies,
     loading,
     error,
-    page,
+    
     setPage,
     filter,
     changeFilter,
