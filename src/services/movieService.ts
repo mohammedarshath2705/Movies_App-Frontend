@@ -1,8 +1,8 @@
-// services/movieService.ts
 import { Movie } from "@/types/movie";
 
 const API_BASE_URL = "https://movies-app-backend-0r3l.onrender.com/movies";
 
+// Fetch movies based on the selected filter, page, and size
 export async function fetchMoviesByFilter(filter: string, page: number, size: number = 20): Promise<Movie[]> {
   try {
     let url = `${API_BASE_URL}/all?page=${page}&size=${size}`;
@@ -16,9 +16,14 @@ export async function fetchMoviesByFilter(filter: string, page: number, size: nu
     }
 
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch movies: ${response.statusText}`);
+    }
+
     const text = await response.text();
     
-    if (!text) {
+    // Handle empty or invalid response
+    if (!text.trim()) {
       return [];
     }
 
@@ -30,33 +35,42 @@ export async function fetchMoviesByFilter(filter: string, page: number, size: nu
   }
 }
 
+// Fetch today's movie releases or fallback to yesterday if none exist
 async function fetchTodayReleases(): Promise<Movie[]> {
-  const today = new Date().toISOString().split("T")[0];
-  let url = `${API_BASE_URL}/moviesByDate?date=${today}`;
-  
-  console.log("Fetching today's releases:", url);
-  let response = await fetch(url);
-  let text = await response.text();
+  try {
+    const today = new Date().toISOString().split("T")[0];
+    let url = `${API_BASE_URL}/moviesByDate?date=${today}`;
+    
+    console.log("Fetching today's releases:", url);
+    let response = await fetch(url);
+    let text = await response.text();
 
-  if (!text || text.trim() === "[]") {
-    const yesterdayDate = new Date();
-    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-    const yesterday = yesterdayDate.toISOString().split("T")[0];
+    // Check for today's releases, otherwise try yesterday
+    if (!text || text.trim() === "[]") {
+      const yesterdayDate = new Date();
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+      const yesterday = yesterdayDate.toISOString().split("T")[0];
 
-    url = `${API_BASE_URL}/moviesByDate?date=${yesterday}`;
-    console.log("No today's releases. Fetching yesterday's:", url);
-    response = await fetch(url);
-    text = await response.text();
-  }
+      url = `${API_BASE_URL}/moviesByDate?date=${yesterday}`;
+      console.log("No today's releases. Fetching yesterday's:", url);
+      response = await fetch(url);
+      text = await response.text();
+    }
 
-  if (!text || text.trim() === "[]") {
+    // Return an empty array if no releases found
+    if (!text || text.trim() === "[]") {
+      return [];
+    }
+
+    const data = JSON.parse(text);
+    return Array.isArray(data) ? data : data.content || [];
+  } catch (error) {
+    console.error("Error fetching today's releases:", error);
     return [];
   }
-
-  const data = JSON.parse(text);
-  return Array.isArray(data) ? data : data.content || [];
 }
 
+// Fetch movie details by ID
 export async function getMovieById(id: string): Promise<Movie | null> {
   try {
     const response = await fetch(`${API_BASE_URL}/${id}`);

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Movie, FilterType } from "@/types/movie";
@@ -12,7 +10,6 @@ export function useMovies() {
   const initialFilter = (searchParams.get("filter") as FilterType) || "default";
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [filter, setFilter] = useState<FilterType>(initialFilter);
 
@@ -20,7 +17,6 @@ export function useMovies() {
     async function loadMovies() {
       try {
         setLoading(true);
-        setError(null);
 
         const data = await fetchMoviesByFilter(filter, page);
 
@@ -28,7 +24,7 @@ export function useMovies() {
           page === 0 ? data : [...prev, ...data.filter((d) => !prev.some((p) => p.id === d.id))]
         );
       } catch (error) {
-        setError("Failed to fetch movies.");
+        console.error("Failed to fetch movies:", error);  // Log error if needed
       } finally {
         setLoading(false);
       }
@@ -50,7 +46,6 @@ export function useMovies() {
   return {
     movies,
     loading,
-    error,
     page,
     setPage,
     filter,
