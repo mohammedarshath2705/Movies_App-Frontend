@@ -9,7 +9,6 @@ export default function MoviesPage() {
   const {
     movies,
     loading,
-    error,
     
     setPage,
     filter,
@@ -50,7 +49,6 @@ export default function MoviesPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <FilterDropdown currentFilter={filter} onFilterChange={changeFilter} />
 
-        {error && <p className="text-center text-red-500 mt-8">{error}</p>}
 
         <MoviesGrid movies={movies} />
 
