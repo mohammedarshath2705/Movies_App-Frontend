@@ -12,12 +12,15 @@ export function MovieCard({ movie }: MovieCardProps) {
     <Link href={`/movies/${movie.id}`}>
       <div className="rounded-lg shadow hover:shadow-lg transition cursor-pointer text-center bg-gray-700 max-w-xs">
         <MoviePoster
-            src={movie.poster || "Placeholder.jpg"}
-            alt={movie.title}
+          src={movie.poster || "Placeholder.jpg"}
+          alt={movie.title}
           className="w-full h-40 object-cover rounded-t-lg"
         />
         <h2 className="text-sm font-medium mt-2 px-2 text-white mb-2 truncate">
           {movie.title}
+        </h2>
+        <h2 className="text-sm font-medium mt-2 px-2 text-white mb-2 truncate">
+          ⭐ {movie.imdbRating}
         </h2>
       </div>
     </Link>
