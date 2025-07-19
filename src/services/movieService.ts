@@ -87,3 +87,24 @@ export async function getMovieById(id: string): Promise<Movie | null> {
     return null;
   }
 }
+
+export async function searchMoviesByTitle(query: string): Promise<Movie[]> {
+  try {
+    const url = `${API_BASE_URL}/search/all?title=${encodeURIComponent(query)}`; // Adjust endpoint if different
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to search movies: ${response.statusText}`);
+    }
+
+    const text = await response.text();
+    if (!text.trim()) {
+      return [];
+    }
+
+    const data = JSON.parse(text);
+    return Array.isArray(data) ? data : data.content || [];
+  } catch (error) {
+    console.error("Error searching movies:", error);
+    return [];
+  }
+}
