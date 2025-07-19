@@ -11,6 +11,7 @@ type PageProps = {
 };
 
 export default async function MovieDetailPage({ params }: PageProps) {
+  const { id } = params;
   const movie = await getMovieById(params.id);
   if (!movie) notFound();
   
