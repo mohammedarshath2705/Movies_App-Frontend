@@ -1,13 +1,20 @@
-
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { MoviesGrid } from "@/components/MoviesGrid";
 import { searchMoviesByTitle, } from "@/services/movieService";
 import { Movie } from "@/types/movie";
 
 export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="text-center text-gray-400 mt-6">Loading search results...</div>}>
+      <SearchContent />
+    </Suspense>
+  );
+}
+
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
   const [movies, setMovies] = useState<Movie[]>([]);
