@@ -43,25 +43,16 @@ export default function MoviesPage() {
     };
   }, [handleObserver]);
 
- const handleSearch = (query: string) => {
-    window.location.href = `/search?query=${encodeURIComponent(query)}`; // Updated to /search
-  };
-
+ 
   return (
     <div className="min-h-screen w-full bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 py-4">
-        <div className="flex justify-between items-center translate-y-8 ml-4">
-          <input
-            type="text"
-            placeholder="Search movies..."
-            className="w-full max-w-xs p-2 border rounded-lg bg-gray-800 text-white border-gray-700"
-            onKeyDown={(e) => e.key === "Enter" && handleSearch(e.currentTarget.value)}
-          />
-          </div>
+        
         <FilterDropdown currentFilter={filter} onFilterChange={changeFilter} />
         <MoviesGrid movies={movies} />
         {loading && <p className="text-center text-gray-400 mt-6">......</p>}
         <div ref={observerRef} className="h-10" />
+        
       </div>
     </div>
   );
