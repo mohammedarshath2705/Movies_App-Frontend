@@ -15,7 +15,8 @@ export function FilterDropdown({ currentFilter, onFilterChange }: FilterDropdown
     { value: "default", label: "Featured" },
     { value: "imdb", label: "IMDb Rating" },
     { value: "release", label: "Release Date" },
-    { value: "today release", label: "Today's Releases" }
+    { value: "today release", label: "Today's Releases" },
+    {value : "favourites",label : "My Favourites"} 
   ];
   
   const currentLabel = filters.find(f => f.value === currentFilter)?.label || "Featured";

@@ -1,8 +1,8 @@
+// src/app/page.tsx
 import Link from "next/link";
 
 export default function HomePage() {
   return (
-    
     <div
       style={{
         position: "relative",

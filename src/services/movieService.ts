@@ -1,45 +1,54 @@
 import { Movie } from "@/types/movie";
+import { getFavourites } from "./favouriteService";
+import { MOVIES_URL } from "@/lib/config";
 
-const API_BASE_URL = "https://movies-app-backend-0r3l.onrender.com/movies";
 
-// Fetch movies based on the selected filter, page, and size
-export async function fetchMoviesByFilter(filter: string, page: number, size: number = 20): Promise<Movie[]> {
+export async function fetchMoviesByFilter(
+  filter: string,
+  page: number,
+  size: number = 20
+): Promise<Movie[]> {
   try {
-    let url = `${API_BASE_URL}/all?page=${page}&size=${size}`;
+    let url = `${MOVIES_URL}/all?page=${page}&size=${size}`;
 
     if (filter === "imdb") {
-      url = `${API_BASE_URL}/byImdbRating?page=${page}&size=${size}`;
-    } else if (filter === "release") {
-      url = `${API_BASE_URL}/byReleaseDate?page=${page}&size=${size}`;
-    } else if (filter === "today release") {
-      return await fetchTodayReleases();
-    }
+  url = `${MOVIES_URL}/byImdbRating?page=${page}&size=${size}`;
+} 
+else if (filter === "release") {
+  url = `${MOVIES_URL}/byReleaseDate?page=${page}&size=${size}`;
+} 
+else if (filter === "today release") {
+  return await fetchTodayReleases();
+} 
+else if (filter === "favourites") {
+  const userId = localStorage.getItem("userId");
+  if (!userId) return [];
+  const favs = await getFavourites(userId);
+  return favs || [];
+}
+
 
     const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch movies: ${response.statusText}`);
-    }
-
     const text = await response.text();
-    
-    // Handle empty or invalid response
-    if (!text.trim()) {
-      return [];
-    }
+
+    if (!text.trim()) return [];
 
     const data = JSON.parse(text);
     return Array.isArray(data) ? data : data.content || [];
+
   } catch (error) {
     console.error("Error fetching movies:", error);
     throw new Error("Failed to fetch movies.");
   }
 }
 
-// Fetch today's movie releases or fallback to yesterday if none exist
+/**
+ * ✅ FETCH Today’s Releases (fallback to yesterday)
+ */
 async function fetchTodayReleases(): Promise<Movie[]> {
   try {
     const today = new Date().toISOString().split("T")[0];
-    let url = `${API_BASE_URL}/moviesByDate?date=${today}`;
+    let url = `${MOVIES_URL}/moviesByDate?date=${today}`;
     
     console.log("Fetching today's releases:", url);
     let response = await fetch(url);
@@ -51,7 +60,7 @@ async function fetchTodayReleases(): Promise<Movie[]> {
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
       const yesterday = yesterdayDate.toISOString().split("T")[0];
 
-      url = `${API_BASE_URL}/moviesByDate?date=${yesterday}`;
+      url = `${MOVIES_URL}/moviesByDate?date=${yesterday}`;
       console.log("No today's releases. Fetching yesterday's:", url);
       response = await fetch(url);
       text = await response.text();
@@ -70,39 +79,51 @@ async function fetchTodayReleases(): Promise<Movie[]> {
   }
 }
 
-// Fetch movie details by ID
+/**
+ * ✅ GET Movie by ID (Protected - Requires JWT)
+ */
 export async function getMovieById(id: string): Promise<Movie | null> {
+  const token = localStorage.getItem("jwt");
+
+  if (!token) {
+    console.error("❌ No JWT found");
+    return null;
+  }
+
   try {
-    const response = await fetch(`${API_BASE_URL}/${id}`);
+    const response = await fetch(`${MOVIES_URL}/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
 
     if (!response.ok) {
-      console.error("Failed to fetch movie by ID:", id);
+      console.error("❌ Error fetching movie:", response.status);
       return null;
     }
 
-    const data = await response.json();
-    return data;
+    return await response.json();
+
   } catch (error) {
-    console.error("Error fetching movie by ID:", error);
+    console.error("❌ Exception fetching movie:", error);
     return null;
   }
 }
 
+/**
+ * ✅ SEARCH Movies by title
+ */
 export async function searchMoviesByTitle(query: string): Promise<Movie[]> {
   try {
-    const url = `${API_BASE_URL}/search/all?title=${encodeURIComponent(query)}`; // Adjust endpoint if different
+    const url = `${MOVIES_URL}/search/all?title=${encodeURIComponent(query)}`;
     const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to search movies: ${response.statusText}`);
-    }
 
     const text = await response.text();
-    if (!text.trim()) {
-      return [];
-    }
+    if (!text.trim()) return [];
 
     const data = JSON.parse(text);
     return Array.isArray(data) ? data : data.content || [];
+
   } catch (error) {
     console.error("Error searching movies:", error);
     return [];

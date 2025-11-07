@@ -11,4 +11,9 @@ export type Movie = {
   poster: string;
 };
 
-export type FilterType = "default" | "imdb" | "release" | "today release";
+export type FilterType =
+  | "default"
+  | "imdb"
+  | "release"
+  | "today release"
+  | "favourites";   
